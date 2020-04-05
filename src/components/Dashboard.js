@@ -15,20 +15,8 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { MainListItems, secondaryListItems } from './listItems';
+import Main from './Main';
 
 const drawerWidth = 240;
 
@@ -36,6 +24,11 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
   },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    fontWeight: theme.typography.fontWeightRegular,
+  },
+
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
   },
@@ -92,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
-    flexGrow: 1,
+    flexGrow: 10,
     height: '100vh',
     overflow: 'auto',
   },
@@ -112,11 +105,28 @@ const useStyles = makeStyles((theme) => ({
   intro: {
     textAlign: "left",
   },
+  mainP: {
+    textAlign: "left",
+    fontSize: "1rem",
+  }
 }));
 
 export default function Dashboard() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [state, setState] = React.useState({
+    open: false,
+    display: 'main'
+  })
+
+  console.log('dashboard state', state);
+
+  const onMenuItemClicked = (displayId) => {
+    const tmpObj = { display: displayId };
+    setState({ ...state, ...tmpObj })
+  }
+
+  const setOpen = (open) => { let tmpObj = { open: open }; setState({ ...state, ...tmpObj }) };
+  const open = state.open;
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -140,7 +150,7 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Software Engineer Training
+            SEトレーニング
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
@@ -162,18 +172,12 @@ export default function Dashboard() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        <List><MainListItems onMenuItemClicked={onMenuItemClicked} /></List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <article>
-            <h1>Welcome to Software Engineer Training</h1>
-            <p className={classes.intro}>Choose a task from the list on the left, attempt to solve it, check the answer, and learn!</p>
-            <p className={classes.intro}>Each task is small enought to complete in a few minutes to a few hours. If you find the task too difficult, you can always check the answer.</p>
-            <p className={classes.intro}>Don't worry if you can't solve every problem. The important thing is you learn something new from it :)</p>
-            <p className={classes.intro}>Happy learning!</p>
-          </article>
+        <Container maxWidth='lg' className={classes.container}>
+          <Main classes={classes} id={state.display} />
         </Container>
       </main>
     </div>
